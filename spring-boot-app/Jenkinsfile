@@ -6,7 +6,7 @@ pipeline {
         IMAGE_TAG = 'v1'
         APP_DIR = 'spring-boot-app'
         DOCKERHUB_USER = 'miteshpatidar25'
-        }
+    }
 
     stages {
         stage('Checkout') {
@@ -31,15 +31,8 @@ pipeline {
                 }
             }
         }
-    }
- 
-    stage ('Build Docker Image') {
-      steps {
-         sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
-      }
-    }
-    
-    stage('Push to Docker Hub') {
+
+        stage('Push to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     sh """
@@ -48,7 +41,20 @@ pipeline {
                     """
                 }
             }
+        }
+
+        // ✅ Add your Helm deployment stage here
+        stage('Deploy to Kubernetes using Helm') {
+            steps {
+                dir('helm-chart') {
+                    sh """
+                        helm upgrade --install $IMAGE_NAME . \
+                        --set image.repository=$DOCKERHUB_USER/$IMAGE_NAME \
+                        --set image.tag=$IMAGE_TAG \
+                        --namespace default
+                    """
+                }
+            }
+        }
     }
-  
-  }
 }
