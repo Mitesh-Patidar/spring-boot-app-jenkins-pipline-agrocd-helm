@@ -1,29 +1,34 @@
 pipeline {
-  agent { label 'jenkins-agent' }
-  
-  environment {
-    IMAGE_NAME = 'springboot-app'
-    IMAGE_TAG = 'v1'
-  }
+    agent { label 'jenkins-agent' }
 
-  stages {
-    stage ('Git Checkout') {
-      steps {
-        git branch: 'main',
+    environment {
+        IMAGE_NAME = 'springboot-app'
+        IMAGE_TAG = 'v1'
+        APP_DIR = 'spring-boot-app'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
                     url: 'https://github.com/Mitesh-Patidar/spring-boot-app-jenkins-pipline-agrocd-helm.git'
-       }
-    }
+            }
+        }
 
-    stage ('Build with Maven') {
-      steps {
-        sh 'mvn clean package -DskipTests'
-      }
+        stage('Build with Maven') {
+            steps {
+                dir("${APP_DIR}") {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                dir("${APP_DIR}") {
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                }
+            }
+        }
     }
- 
-    stage ('Build Docker Image') {
-      steps {
-         sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
-      }
-    }
-  }
 }
