@@ -13,10 +13,10 @@ spec:
     metadata:
       labels:
         app: {{ .Chart.Name }}
-  spec:
-    containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
-        ports:
-          - containerPort: {{ .Values.containerPort }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository}}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.containerPort }}
 
