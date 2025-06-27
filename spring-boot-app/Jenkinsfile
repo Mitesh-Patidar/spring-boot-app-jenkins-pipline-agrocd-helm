@@ -5,7 +5,8 @@ pipeline {
         IMAGE_NAME = 'springboot-app'
         IMAGE_TAG = 'v1'
         APP_DIR = 'spring-boot-app'
-    }
+        DOCKERHUB_USER = 'miteshpatidar25'
+        }
 
     stages {
         stage('Checkout') {
